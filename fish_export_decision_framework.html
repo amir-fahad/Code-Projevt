@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fish Export Decision Framework</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+        }
+        
+        .scenario-box {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 20px rgba(255, 107, 107, 0.3);
+        }
+        
+        .scenario-box h2 {
+            margin-top: 0;
+            font-size: 1.5em;
+        }
+        
+        .variables-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .variable-card {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(116, 185, 255, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .variable-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(116, 185, 255, 0.4);
+        }
+        
+        .variable-card h3 {
+            margin-top: 0;
+            font-size: 1.3em;
+            border-bottom: 2px solid rgba(255,255,255,0.3);
+            padding-bottom: 10px;
+        }
+        
+        .decision-matrix {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .decision-matrix h2 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .options-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .option-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-left: 5px solid #00b894;
+            transition: all 0.3s ease;
+        }
+        
+        .option-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        
+        .option-card.recommended {
+            border-left-color: #00b894;
+            background: linear-gradient(135deg, #00b894, #00a085);
+            color: white;
+        }
+        
+        .option-card h4 {
+            margin-top: 0;
+            color: #2c3e50;
+            font-size: 1.2em;
+        }
+        
+        .option-card.recommended h4 {
+            color: white;
+        }
+        
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .pros, .cons {
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.9em;
+        }
+        
+        .pros {
+            background: rgba(0, 184, 148, 0.1);
+            border-left: 3px solid #00b894;
+        }
+        
+        .cons {
+            background: rgba(255, 107, 107, 0.1);
+            border-left: 3px solid #ff6b6b;
+        }
+        
+        .option-card.recommended .pros,
+        .option-card.recommended .cons {
+            background: rgba(255,255,255,0.2);
+            border-left-color: rgba(255,255,255,0.8);
+        }
+        
+        .best-approach {
+            background: linear-gradient(135deg, #00b894, #00a085);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 30px;
+            box-shadow: 0 10px 20px rgba(0, 184, 148, 0.3);
+        }
+        
+        .best-approach h2 {
+            margin-top: 0;
+            text-align: center;
+            font-size: 1.8em;
+        }
+        
+        .step {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-left: 4px solid rgba(255,255,255,0.5);
+        }
+        
+        .step h4 {
+            margin: 0 0 10px 0;
+            font-size: 1.1em;
+        }
+        
+        .icon {
+            font-size: 1.5em;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        
+        .risk-indicator {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        
+        .high-risk {
+            background: #ff6b6b;
+            color: white;
+        }
+        
+        .medium-risk {
+            background: #fdcb6e;
+            color: #2d3436;
+        }
+        
+        .low-risk {
+            background: #00b894;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🐟 Fish Export Decision Framework</h1>
+        <p class="subtitle">Strategic Analysis for Japanese Market Quota Threat</p>
+        
+        <div class="scenario-box">
+            <h2>📋 Current Scenario</h2>
+            <p><strong>Situation:</strong> Japanese legislature considering import quota on fish products</p>
+            <p><strong>Your Position:</strong> Only global firm exporting fish to Japan, competing against Japanese firms with first-mover advantage</p>
+            <p><strong>First Instinct:</strong> Lobby against the quota through trade representative</p>
+            <p><strong>Question:</strong> Is this necessarily the best decision?</p>
+        </div>
+        
+        <h2 style="text-align: center; color: #2c3e50; margin-bottom: 20px;">🔍 Key Variables to Consider</h2>
+        
+        <div class="variables-grid">
+            <div class="variable-card">
+                <h3>🏛️ Political Dynamics</h3>
+                <p><strong>Lobbying Effectiveness:</strong> Success rate of foreign lobbying efforts in Japan</p>
+                <p><strong>Timing:</strong> How far along is the legislative process?</p>
+                <p><strong>Stakeholder Influence:</strong> Who supports/opposes the quota?</p>
+            </div>
+            
+            <div class="variable-card">
+                <h3>💼 Competitive Position</h3>
+                <p><strong>Market Share:</strong> Current vs. potential future position</p>
+                <p><strong>First-Mover Disadvantage:</strong> Japanese firms' established relationships</p>
+                <p><strong>Differentiation:</strong> Unique value proposition of foreign fish products</p>
+            </div>
+            
+            <div class="variable-card">
+                <h3>📊 Economic Factors</h3>
+                <p><strong>Quota Size:</strong> How restrictive will the limits be?</p>
+                <p><strong>Price Impact:</strong> Potential premium from scarcity</p>
+                <p><strong>Cost-Benefit:</strong> Lobbying costs vs. potential losses</p>
+            </div>
+            
+            <div class="variable-card">
+                <h3>🔄 Alternative Strategies</h3>
+                <p><strong>Market Diversification:</strong> Other potential export markets</p>
+                <p><strong>Value-Added Services:</strong> Premium positioning opportunities</p>
+                <p><strong>Strategic Partnerships:</strong> Collaboration with Japanese firms</p>
+            </div>
+            
+            <div class="variable-card">
+                <h3>⚡ Risk Assessment</h3>
+                <p><strong>Backlash Risk:</strong> Negative consequences of lobbying</p>
+                <p><strong>Relationship Impact:</strong> Effect on customer relationships</p>
+                <p><strong>Long-term Reputation:</strong> Brand perception in Japan</p>
+            </div>
+            
+            <div class="variable-card">
+                <h3>⏰ Time Sensitivity</h3>
+                <p><strong>Implementation Timeline:</strong> When quota takes effect</p>
+                <p><strong>Adjustment Period:</strong> Time to adapt business model</p>
+                <p><strong>Window of Opportunity:</strong> Time to execute alternatives</p>
+            </div>
+        </div>
+        
+        <div class="decision-matrix">
+            <h2>⚖️ Decision Options Analysis</h2>
+            
+            <div class="options-container">
+                <div class="option-card">
+                    <h4>🎯 Option 1: Immediate Lobbying</h4>
+                    <span class="risk-indicator high-risk">High Risk</span>
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <strong>Pros:</strong><br>
+                            • Direct approach<br>
+                            • Potential to block quota<br>
+                            • Shows proactive stance
+                        </div>
+                        <div class="cons">
+                            <strong>Cons:</strong><br>
+                            • May damage relationships<br>
+                            • Low success probability<br>
+                            • High political risk
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="option-card">
+                    <h4>🤝 Option 2: Engage Japanese Partners</h4>
+                    <span class="risk-indicator medium-risk">Medium Risk</span>
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <strong>Pros:</strong><br>
+                            • Leverage local relationships<br>
+                            • Collaborative approach<br>
+                            • Cultural sensitivity
+                        </div>
+                        <div class="cons">
+                            <strong>Cons:</strong><br>
+                            • Depends on partner willingness<br>
+                            • May require concessions<br>
+                            • Uncertain timeline
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="option-card">
+                    <h4>💎 Option 3: Premium Positioning</h4>
+                    <span class="risk-indicator low-risk">Low Risk</span>
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <strong>Pros:</strong><br>
+                            • Higher margins possible<br>
+                            • Differentiation strategy<br>
+                            • Sustainable advantage
+                        </div>
+                        <div class="cons">
+                            <strong>Cons:</strong><br>
+                            • Smaller market volume<br>
+                            • Higher marketing costs<br>
+                            • Market acceptance risk
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="option-card recommended">
+                    <h4>🎯 Option 4: Multi-Pronged Strategy</h4>
+                    <span class="risk-indicator low-risk">Recommended</span>
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <strong>Pros:</strong><br>
+                            • Comprehensive approach<br>
+                            • Risk mitigation<br>
+                            • Multiple success paths
+                        </div>
+                        <div class="cons">
+                            <strong>Cons:</strong><br>
+                            • Resource intensive<br>
+                            • Complex coordination<br>
+                            • Higher initial investment
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="best-approach">
+            <h2>🎯 Recommended Decision Framework</h2>
+            
+            <div class="step">
+                <h4><span class="icon">📊</span>Step 1: Rapid Intelligence Gathering</h4>
+                <p>Assess quota likelihood, timeline, and severity through Japanese market research and customer intelligence before taking action.</p>
+            </div>
+            
+            <div class="step">
+                <h4><span class="icon">🤝</span>Step 2: Stakeholder Engagement</h4>
+                <p>Engage Japanese customers and potential partners to understand their perspective and explore collaborative solutions.</p>
+            </div>
+            
+            <div class="step">
+                <h4><span class="icon">⚖️</span>Step 3: Strategic Evaluation</h4>
+                <p>Analyze whether lobbying helps or hurts long-term relationships, and identify alternative value creation opportunities.</p>
+            </div>
+            
+            <div class="step">
+                <h4><span class="icon">🎯</span>Step 4: Coordinated Response</h4>
+                <p>Execute a combination of diplomatic engagement, premium positioning, and measured lobbying based on intelligence gathered.</p>
+            </div>
+            
+            <div class="step">
+                <h4><span class="icon">🔄</span>Step 5: Adaptive Strategy</h4>
+                <p>Develop contingency plans for different quota scenarios while building resilience through market diversification.</p>
+            </div>
+        </div>
+        
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 15px; margin-top: 30px; text-align: center;">
+            <h3 style="color: #2c3e50; margin-bottom: 15px;">💡 Key Insight</h3>
+            <p style="font-size: 1.1em; color: #555; margin: 0;">
+                <strong>Following your first instinct is NOT necessarily the best decision.</strong> 
+                A knee-jerk lobbying response could damage valuable relationships and may be ineffective. 
+                A thoughtful, multi-faceted approach considering all stakeholders and alternatives is more likely to succeed.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
